@@ -76,10 +76,14 @@ def reload():
     # loading meshes ===================================
     
     try:
-        r=requests.get('http://myosg.grid.iu.edu/psmesh/all')
+        r=requests.get('http://meshconfig.grid.iu.edu/pub/config/')
         res = r.json()
         for r in res:
-            meshes.append(r['include'][0])
+            inc = r['include'][0]
+            inc = inc.replace("https://","http://")
+            if not inc.startswith('http://'):
+                inc = 'http://' + inc
+            meshes.append(inc)
         print ('All defined meshes:', meshes)
     except:
         print ("Could not load meshes  Exiting...")
@@ -91,7 +95,7 @@ def reload():
     for m in meshes:
         print('Loading mesh:', m)
         try:
-            r=requests.get(m)
+            r=requests.get(m, verify=False)
             res = r.json()
             for o in res['organizations']:
                 for s in o['sites']:
