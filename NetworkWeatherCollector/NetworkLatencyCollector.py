@@ -75,6 +75,9 @@ def eventCreator():
         data['MA'] = m['meta']['measurement_agent']
         data['src'] = source
         data['dest'] = destination
+        data['ipv6'] = False
+        if ':' in source or ':' in destination:
+            data['ipv6'] = True
         so = siteMapping.getPS(source)
         de = siteMapping.getPS(destination)
         if so is not None:
@@ -93,14 +96,14 @@ def eventCreator():
             th_fl = dict((float(k), v) for (k, v) in th.items())
 
             # mean
-            th_mean = sum(k*v for k, v in th_fl.items())/600
+            samples = sum([v for k, v in th_fl.items()])
+            th_mean = sum(k*v for k, v in th_fl.items())/samples
             data['delay_mean'] = th_mean
             # std dev
-            data['delay_sd'] = math.sqrt(sum((k - th_mean) ** 2 * v for k, v in th_fl.items()) / 600)
+            data['delay_sd'] = math.sqrt(sum((k - th_mean) ** 2 * v for k, v in th_fl.items()) / samples)
             # median
             csum = 0
             ordered_th = [(k, v) for k, v in sorted(th_fl.items())]
-            samples = sum([v for k, v in ordered_th])
             midpoint = samples // 2
             if samples % 2 == 0:  # even number of samples
                 for index, entry in enumerate(ordered_th):
