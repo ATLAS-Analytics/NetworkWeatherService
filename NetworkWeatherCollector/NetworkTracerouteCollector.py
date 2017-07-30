@@ -126,7 +126,8 @@ def eventCreator():
                 else:
                     hs += h
             data['n_hops'] = len(data['hops'])
-            data['max_rtt'] = max(data['rtts'])
+            if len(data['rtts']):
+                data['max_rtt'] = max(data['rtts'])
             data['hash'] = hash(hs)
             aLotOfData.append(copy.copy(data))
         q.task_done()
