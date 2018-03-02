@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3.5
 
 import os, sys, time
 import threading
@@ -46,10 +46,10 @@ def getInterfaces():
     	if r.status_code == 200:
             entities = r.json()
             # print(entities)
-	    for e in entities['data']['networkEntities']:
+            for e in entities['data']['networkEntities']:
                 interfaces.append(interface(e['shortName'],e['hasFlow'],e['tags']))
     	else:
-        	print 'got status {0}: {1}'.format(r.status_code, r.content)
+        	print ('got status', r.status_code, ":", r.content)
     except:
         print ("Unexpected error in getting Interfaces:", sys.exc_info()[0])
 	
@@ -75,10 +75,10 @@ def getInterfaceData(i):
     	r = requests.get(url, dict(query=interface_q), headers=dict(Authorization='Token ' + APIkey))
 
     	if r.status_code != 200:
-	    print 'got status {0}: {1}'.format(r.status_code, r.content)
+            print ('got status',r.status_code,':', r.content)
             return res
 
-    	dat = r.json()
+        dat = r.json()
         ins = dat['data']['networkEntity']['interfaces']
     	#print(ins)
 
@@ -98,8 +98,9 @@ def getInterfaceData(i):
             data['description'] = st["name"]
             for sample in traf:
                 data['timestamp'] = sample[0]
-                data['rateIn'] = long(sample[1])
-                data['rateOut'] = long(sample[2])
+                if sample[1]==None or sample[2]==None: continue
+                data['rateIn'] = int(sample[1])
+                data['rateOut'] = int(sample[2])
                 res.append(data.copy())
         print(i.name,'got',len(res),"interface results.")
         i.lastInterfaceUpdate = currenttime
@@ -126,7 +127,7 @@ def getFlowData(i):
     	r = requests.get(url, dict(query=flow_q), headers=dict(Authorization='Token ' + APIkey))
 
     	if r.status_code != 200:
-   	    print 'flow got status {0}: {1}'.format(r.status_code, r.content)
+            print ('flow got status',r.status_code,':' ,r.content)
             return res
 
 	dat = r.json()
