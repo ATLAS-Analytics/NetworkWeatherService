@@ -76,6 +76,11 @@ def eventCreator():
         data['MA'] = m['meta']['measurement_agent']
         data['src'] = source
         data['dest'] = destination
+        data['src_host'] = m['meta']['input_source']
+        data['dest_host'] = m['meta']['input_destination']
+        data['ipv6'] = False
+        if ':' in source or ':' in destination:
+            data['ipv6'] = True
         so = siteMapping.getPS(source)
         de = siteMapping.getPS(destination)
         if so != None:
@@ -122,6 +127,9 @@ def eventCreator():
                     hs += "None"
                 else:
                     hs += h
+            data['n_hops'] = len(data['hops'])
+            if len(data['rtts']):
+                data['max_rtt'] = max(data['rtts'])
             data['hash'] = hash(hs)
             aLotOfData.append(copy.copy(data))
         q.task_done()
