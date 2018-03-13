@@ -77,6 +77,7 @@ def getInterfaceData(i):
     }""" % (i.name, i.lastInterfaceUpdate.isoformat(), currenttime.isoformat())
 
     try:
+        
         r = requests.get(url, dict(query=interface_q), headers=dict(Authorization='Token ' + APIkey))
 
         if r.status_code != 200:
@@ -91,7 +92,8 @@ def getInterfaceData(i):
         ind = "esnet_" + str(d.year) + "-" + str(d.month)
         data = {
             '_index': ind,
-            '_type': 'interface',
+            '_type': 'doc',
+            'type': 'interface',
             'site': i.name
         }
 
@@ -145,7 +147,8 @@ def getFlowData(i):
         ind = "esnet_" + str(d.year) + "-" + str(d.month)
         data = {
             '_index': ind,
-            '_type': 'flow',
+            '_type': 'doc',
+            'type': 'flow',
             'site1': i.name
         }
 
